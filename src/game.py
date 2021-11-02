@@ -6,28 +6,35 @@ class Game() :
     Set up the game.
     """
     def __init__(self, world_file: str) :
-        self.world_file = world_file
+        self.worlds = self.process_world(world_file)
+        self.current_world = None
 
-    def process_world(self) :
+    def process_world(self, file_name: str) :
         """
         Processes the world file
         """
+        world_file = open(file_name, 'r')
+        temp = world_file.readlines()
         worlds: list[World] = []
 
+        for obj in temp :
+            worlds.append(World(obj.strip()))
+
         return worlds
+
+    def list_worlds(self):
+        for world in self.worlds:
+            print(world.name)        
+
+    def add_world(self, name: str) :
+        self.worlds.append(World(name))
     
     def run(self) :
         # state of game
         running = True
 
-        # state of world
-        current: World = None
-
         # list of commands
         commands = ["start", "stop", "new", "save", "list", "quit"]
-
-        # list of worlds
-        worlds: list[World] = self.process_world()
 
         # starting game
         print("Starting game...")
@@ -56,14 +63,14 @@ class Game() :
                         world_name = command[1]
 
                     print("Creating World...")
-                    worlds.append(World(command[1], True))
+                    self.add_world(world_name)
 
-                    print("World created...")
+                    print(world_name, "created.")
 
                 # 'list' command
                 elif command[0] == "list":
-                    for world in worlds:
-                        print(world.name)
+                    print("List of Worlds:")
+                    self.list_worlds()
 
                 # 'quit' command
                 elif command[0] == "quit":
